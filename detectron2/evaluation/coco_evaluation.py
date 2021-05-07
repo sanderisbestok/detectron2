@@ -23,6 +23,7 @@ from detectron2.evaluation.fast_eval_api import COCOeval_opt
 from detectron2.structures import Boxes, BoxMode, pairwise_iou
 from detectron2.utils.file_io import PathManager
 from detectron2.utils.logger import create_small_table
+import csv
 
 from .evaluator import DatasetEvaluator
 
@@ -43,6 +44,7 @@ class COCOEvaluator(DatasetEvaluator):
     def __init__(
         self,
         dataset_name,
+        iteration,
         tasks=None,
         distributed=True,
         output_dir=None,
@@ -84,6 +86,7 @@ class COCOEvaluator(DatasetEvaluator):
         self._distributed = distributed
         self._output_dir = output_dir
         self._use_fast_impl = use_fast_impl
+        self._iter = iteration
 
         if tasks is not None and isinstance(tasks, CfgNode):
             kpt_oks_sigmas = (
@@ -132,16 +135,27 @@ class COCOEvaluator(DatasetEvaluator):
             outputs: the outputs of a COCO model. It is a list of dicts with key
                 "instances" that contains :class:`Instances`.
         """
-        for input, output in zip(inputs, outputs):
+        os.makedirs("/home/hansen/results/trident/"+str(self._iter), exist_ok = True)
+
+        for input, output in zip(inputs, outputs): 
             prediction = {"image_id": input["image_id"]}
 
             if "instances" in output:
                 instances = output["instances"].to(self._cpu_device)
                 prediction["instances"] = instances_to_coco_json(instances, input["image_id"])
-            if "proposals" in output:
-                prediction["proposals"] = output["proposals"].to(self._cpu_device)
+                txt = []
+
+                for instance in prediction["instances"]:
+                    txt.append([0] + instance["bbox"] + [instance["score"]])
+
+            with open(os.path.join("/home/hansen", "results", "trident", str(self._iter), os.path.basename(input["file_name"])[:-4]+".txt"),"w+") as my_csv:
+                csvWriter = csv.writer(my_csv,delimiter=' ')
+                csvWriter.writerows(txt)  
+                
             if len(prediction) > 1:
                 self._predictions.append(prediction)
+
+
 
     def evaluate(self, img_ids=None):
         """
@@ -157,24 +171,27 @@ class COCOEvaluator(DatasetEvaluator):
                 return {}
         else:
             predictions = self._predictions
+        
 
-        if len(predictions) == 0:
-            self._logger.warning("[COCOEvaluator] Did not receive valid predictions.")
-            return {}
+       
 
-        if self._output_dir:
-            PathManager.mkdirs(self._output_dir)
-            file_path = os.path.join(self._output_dir, "instances_predictions.pth")
-            with PathManager.open(file_path, "wb") as f:
-                torch.save(predictions, f)
+        # if len(predictions) == 0:
+        #     self._logger.warning("[COCOEvaluator] Did not receive valid predictions.")
+        #     return {}
 
-        self._results = OrderedDict()
-        if "proposals" in predictions[0]:
-            self._eval_box_proposals(predictions)
-        if "instances" in predictions[0]:
-            self._eval_predictions(predictions, img_ids=img_ids)
-        # Copy so the caller can do whatever with results
-        return copy.deepcopy(self._results)
+        # if self._output_dir:
+        #     PathManager.mkdirs(self._output_dir)
+        #     file_path = os.path.join(self._output_dir, "instances_predictions.pth")
+        #     with PathManager.open(file_path, "wb") as f:
+        #         torch.save(predictions, f)
+
+        # self._results = OrderedDict()
+        # if "proposals" in predictions[0]:
+        #     self._eval_box_proposals(predictions)
+        # if "instances" in predictions[0]:
+        #     self._eval_predictions(predictions, img_ids=img_ids)
+        # # Copy so the caller can do whatever with results
+        return #copy.deepcopy(self._results)
 
     def _tasks_from_predictions(self, predictions):
         """

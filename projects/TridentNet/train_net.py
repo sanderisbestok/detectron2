@@ -29,12 +29,26 @@ def setup(args):
     """
     Create configs and perform basic setups.
     """
+
+    tmpdir = os.environ['TMPDIR']
+
+    from detectron2.data.datasets import register_coco_instances
+    register_coco_instances("annotations_train", {}, tmpdir + "/sander/data/extremenet/annotations/annotations_train.json", tmpdir + "/sander/data/extremenet/images/train")
+    register_coco_instances("annotations_val", {}, tmpdir + "/sander/data/extremenet/annotations/annotations_val.json", tmpdir + "/sander/data/extremenet/images/val")
+
+
     cfg = get_cfg()
     add_tridentnet_config(cfg)
     cfg.merge_from_file(args.config_file)
     cfg.merge_from_list(args.opts)
+    
+    cfg.MODEL.ROI_HEADS.NUM_CLASSES = 1
+    cfg.SOLVER.MAX_ITER = 500 
+    # cfg.MODEL.WEIGHTS = "./pretrained/tridentnet.pkl"
+    
     cfg.freeze()
     default_setup(cfg, args)
+
     return cfg
 
 

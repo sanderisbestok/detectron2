@@ -451,7 +451,7 @@ class DefaultTrainer(TrainerBase):
             ret.append(hooks.PeriodicCheckpointer(self.checkpointer, cfg.SOLVER.CHECKPOINT_PERIOD))
 
         def test_and_save_results():
-            self._last_eval_results = self.test(self.cfg, self.model)
+            self._last_eval_results = self.test(self.cfg, self.model, self.iter)
             return self._last_eval_results
 
         # Do evaluation after checkpointer, because then if it fails,
@@ -566,7 +566,7 @@ Alternatively, you can call evaluation functions yourself (see Colab balloon tut
         )
 
     @classmethod
-    def test(cls, cfg, model, evaluators=None):
+    def test(cls, cfg, model, iteration, evaluators=None):
         """
         Args:
             cfg (CfgNode):
@@ -595,7 +595,7 @@ Alternatively, you can call evaluation functions yourself (see Colab balloon tut
                 evaluator = evaluators[idx]
             else:
                 try:
-                    evaluator = cls.build_evaluator(cfg, dataset_name)
+                    evaluator = cls.build_evaluator(cfg, dataset_name, iteration)
                 except NotImplementedError:
                     logger.warn(
                         "No evaluator found. Use `DefaultTrainer.test(evaluators=)`, "

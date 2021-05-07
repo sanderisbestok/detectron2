@@ -5,7 +5,7 @@ MODEL:
   ROI_HEADS:
     NAME: "TridentRes5ROIHeads"
     POSITIVE_FRACTION: 0.5
-    BATCH_SIZE_PER_IMAGE: 128
+    BATCH_SIZE_PER_IMAGE: 64
     PROPOSAL_APPEND_GT: False
   PROPOSAL_GENERATOR:
     NAME: "TridentRPN"
@@ -17,10 +17,10 @@ MODEL:
     TEST_BRANCH_IDX: 1
     TRIDENT_STAGE: "res4"
 DATASETS:
-  TRAIN: ("coco_2017_train",)
-  TEST: ("coco_2017_val",)
+  TRAIN: ("annotations_train",)
+  TEST: ("annotations_val",)
 SOLVER:
-  IMS_PER_BATCH: 16
+  IMS_PER_BATCH: 4
   BASE_LR: 0.02
   STEPS: (60000, 80000)
   MAX_ITER: 90000
