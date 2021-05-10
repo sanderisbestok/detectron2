@@ -146,7 +146,7 @@ class COCOEvaluator(DatasetEvaluator):
                 txt = []
 
                 for instance in prediction["instances"]:
-                    txt.append([0] + instance["bbox"] + [instance["score"]])
+                    txt.append([1] + [instance["score"] + instance["bbox"]])
 
             with open(os.path.join("/home/hansen", "results", "trident", str(self._iter), os.path.basename(input["file_name"])[:-4]+".txt"),"w+") as my_csv:
                 csvWriter = csv.writer(my_csv,delimiter=' ')

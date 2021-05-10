@@ -82,7 +82,8 @@ def main(args):
     cfg.SOLVER.MAX_ITER = 1000          # Maximum number of iterations
     cfg.SOLVER.WARMUP_ITERS = 100       # Warmup iterations to linearly ramp learning rate from zero
     cfg.SOLVER.IMS_PER_BATCH = 2        # Lower to reduce memory usage (1 is the lowest)
-    cfg.TEST.EVAL_PERIOD = 1          # When to evaluate
+    cfg.TEST.EVAL_PERIOD = 10          # When to evaluate
+    cfg.SOLVER.CHECKPOINT_PERIOD = 16
 
     if args.eval_only:
         model = Trainer.build_model(cfg)
