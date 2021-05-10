@@ -1,3 +1,23 @@
+To install:
+
+* conda install -c conda-forge opencv
+* pip3 install torch torchvision torchaudio
+* module load 2020
+* module load CUDA/11.0.2-GCC-9.3.0
+* python -m pip install -e .
+
+To use:
+module load 2020 \
+module load CUDA/11.0.2-GCC-9.3.0 \
+module load OpenCV/4.5.0-fosscuda-2020a-Python-3.8.2
+conda activate detectron \
+
+Demo Commando:
+python demo.py --config-file ../projects/TridentNet/configs/tridentnet_fast_R_101_C4_3x.yaml --input ../../../download.jpeg --opts MODEL.WEIGHTS ../pretrained/tridentnet.pkl
+
+train_trident.py gebruiken\
+python train_trident.py --num-gpus 2
+
 <img src=".github/Detectron2-Logo-Horz.svg" width="300" >
 
 Detectron2 is Facebook AI Research's next generation library
