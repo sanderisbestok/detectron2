@@ -1,77 +1,86 @@
-To install:
+:warning: **This is not ther original Detectron2**: This version is edited so it can be used for my Thesis. For the official Detectron2 repo please go to [this repository](https://github.com/facebookresearch/detectron2).
 
-* conda install -c conda-forge opencv
-* pip3 install torch torchvision torchaudio
-* module load 2020
-* module load CUDA/11.0.2-GCC-9.3.0
-* python -m pip install -e .
+## Description
+This readme will provide, installation, execution and testing instructions. Experiments for the thesis are conducted on the Lisa cluster and all installations are done in an Anaconda Environment.
 
-To use:
-module load 2020 \
-module load CUDA/11.0.2-GCC-9.3.0 \
-module load OpenCV/4.5.0-fosscuda-2020a-Python-3.8.2
-conda activate detectron \
+Algorithms used for the thesis are:
 
-Demo Commando:
-python demo.py --config-file ../projects/TridentNet/configs/tridentnet_fast_R_101_C4_3x.yaml --input ../../../download.jpeg --opts MODEL.WEIGHTS ../pretrained/tridentnet.pkl
+ 1. [ExtremeNet](https://github.com/sanderisbestok/ExtremeNet)
+ 2. [TridentNet in Detectron2](https://github.com/sanderisbestok/detectron2)
+ 3. [YoloV5](https://github.com/sanderisbestok/yolov5)
 
-train_trident.py gebruiken\
-python train_trident.py --num-gpus 2
-
-<img src=".github/Detectron2-Logo-Horz.svg" width="300" >
-
-Detectron2 is Facebook AI Research's next generation library
-that provides state-of-the-art detection and segmentation algorithms.
-It is the successor of
-[Detectron](https://github.com/facebookresearch/Detectron/)
-and [maskrcnn-benchmark](https://github.com/facebookresearch/maskrcnn-benchmark/).
-It supports a number of computer vision research projects and production applications in Facebook.
-
-<div align="center">
-  <img src="https://user-images.githubusercontent.com/1381301/66535560-d3422200-eace-11e9-9123-5535d469db19.png"/>
-</div>
-
-### What's New
-* Includes new capabilities such as panoptic segmentation, Densepose, Cascade R-CNN, rotated bounding boxes, PointRend,
-  DeepLab, etc.
-* Used as a library to support building [research projects](projects/) on top of it.
-* Models can be exported to TorchScript format or Caffe2 format for deployment.
-* It [trains much faster](https://detectron2.readthedocs.io/notes/benchmarks.html).
-
-See our [blog post](https://ai.facebook.com/blog/-detectron2-a-pytorch-based-modular-object-detection-library-/)
-to see more demos and learn about detectron2.
+Evaluation tools can be found in [this repository](https://github.com/sanderisbestok/thesis_tools). Data preparation steps can also be found in this repository, it is advised to first follow the steps there.
 
 ## Installation
+To install on the Lisa cluster: 
 
-See [installation instructions](https://detectron2.readthedocs.io/tutorials/install.html).
+1. Load modules
+   ```
+   module load 2020
+   module load Anaconda3/2020.02 
+   ```
 
-## Getting Started
+2. Clone the repo:
+   ```
+   git clone https://github.com/sanderisbestok/detectron2
+   ```
 
-See [Getting Started with Detectron2](https://detectron2.readthedocs.io/tutorials/getting_started.html),
-and the [Colab Notebook](https://colab.research.google.com/drive/16jcaJoc6bCFAQ96jDe2HwtXj7BMD_-m5)
-to learn about basic usage.
+3. Create the environment:
+   ```
+   conda create --name detectron python=3.8
+   ```
 
-Learn more at our [documentation](https://detectron2.readthedocs.org).
-And see [projects/](projects/) for some projects that are built on top of detectron2.
+4. Install packages
+   ```
+   conda install -c conda-forge opencv
+   pip3 install torch torchvision torchaudio
+   ```    
 
-## Model Zoo and Baselines
+5. Load modules again
+   ```
+   module load 2020
+   module load CUDA/11.0.2-GCC-9.3.0
+   ```
 
-We provide a large set of baseline results and trained models available for download in the [Detectron2 Model Zoo](MODEL_ZOO.md).
+6. Install detectron
+   ```
+   python -m pip install -e .
+   ```
 
-## License
+## Training
+To train we need the pre-trained TridentNet model which can be downloaded [here](https://dl.fbaipublicfiles.com/detectron2/TridentNet/tridentnet_fast_R_101_C4_3x/148572198/model_final_164568.pkl). Place this model in the main folder.
 
-Detectron2 is released under the [Apache 2.0 license](LICENSE).
+The following job can be used to train the network if the network is installed in ~/networks/detectron2 with the environment yolov5.
 
-## Citing Detectron2
-
-If you use Detectron2 in your research or wish to refer to the baseline results published in the [Model Zoo](MODEL_ZOO.md), please use the following BibTeX entry.
-
-```BibTeX
-@misc{wu2019detectron2,
-  author =       {Yuxin Wu and Alexander Kirillov and Francisco Massa and
-                  Wan-Yen Lo and Ross Girshick},
-  title =        {Detectron2},
-  howpublished = {\url{https://github.com/facebookresearch/detectron2}},
-  year =         {2019}
-}
 ```
+#!/bin/bash
+#SBATCH -t 08:00:00
+
+#SBATCH -p gpu
+#SBATCH -N 1
+#SBATCH --gpus-per-node=gtx1080ti:4
+
+module load 2020
+module load CUDA/11.0.2-GCC-9.3.0
+module load OpenCV/4.5.0-fosscuda-2020a-Python-3.8.2
+
+mkdir $TMPDIR/sander
+cp -r $HOME/data $TMPDIR/sander/
+
+conda activate detectron
+cd ~/networks/detectron/
+
+python train_trident.py --num-gpus 4
+```
+
+## Testing
+As of this moment, testing is build into the training stage. So during the training the results will be saved. No later testing is needed.
+
+## Extra
+Detectron2 visualiser can be used with the following command:
+
+Demo Commando:
+python demo.py --config-file ../projects/TridentNet/configs/tridentnet_fast_R_101_C4_3x.yaml --input path_to_image --opts MODEL.WEIGHTS paht_to_model
+
+The model is saved to the tridentnet_training_output folder inside the detectron2 repo.
+
