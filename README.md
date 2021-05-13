@@ -1,4 +1,4 @@
-:warning: **This is not ther original Detectron2**: This version is edited so it can be used for my Thesis. For the official Detectron2 repo please go to [this repository](https://github.com/facebookresearch/detectron2).
+:warning: **This is not the original Detectron2**: This version is edited so it can be used for my Thesis. For the official Detectron2 repo please go to [this repository](https://github.com/facebookresearch/detectron2).
 
 ## Description
 This readme will provide, installation, execution and testing instructions. Experiments for the thesis are conducted on the Lisa cluster and all installations are done in an Anaconda Environment.
