@@ -54,7 +54,7 @@ The following job can be used to train the network if the network is installed i
 
 ```
 #!/bin/bash
-#SBATCH -t 08:00:00
+#SBATCH -t 06:00:00
 
 #SBATCH -p gpu
 #SBATCH -N 1
@@ -63,18 +63,28 @@ The following job can be used to train the network if the network is installed i
 module load 2020
 module load CUDA/11.0.2-GCC-9.3.0
 module load OpenCV/4.5.0-fosscuda-2020a-Python-3.8.2
+module load Anaconda3/2020.02 
 
 mkdir $TMPDIR/sander
 cp -r $HOME/data $TMPDIR/sander/
 
-conda activate detectron
-cd ~/networks/detectron/
+source activate /home/hansen/anaconda3/envs/detectron/
+cd ~/networks/detectron2/
 
 python train_trident.py --num-gpus 4
 ```
 
-## Testing
-As of this moment, testing is build into the training stage. So during the training the results will be saved. No later testing is needed.
+## Validation & Testing
+As of this moment, validation is build into the training stage. So during the training the results will be saved. 
+
+### Testing
+To do the actual testing on a test database instead of validation you can use the following command in the demo folder.
+
+```
+python test.py --config-file ../projects/TridentNet/configs/tridentnet_fast_R_101_C4_3x.yaml --input ~/data/extremenet/images/test/ --confidence-threshold 0.000000001 --opts MODEL.WEIGHTS ~/weights/experiment_1/trident_2499.pth MODEL.ROI_HEADS.NUM_CLASSES 1
+```
+
+
 
 ## Extra
 Detectron2 visualiser can be used with the following command:
