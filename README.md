@@ -74,8 +74,17 @@ cd ~/networks/detectron2/
 python train_trident.py --num-gpus 4
 ```
 
-## Testing
-As of this moment, testing is build into the training stage. So during the training the results will be saved. No later testing is needed.
+## Validation & Testing
+As of this moment, validation is build into the training stage. So during the training the results will be saved. 
+
+### Testing
+To do the actual testing on a test database instead of validation you can use the following command in the demo folder.
+
+```
+python test.py --config-file ../projects/TridentNet/configs/tridentnet_fast_R_101_C4_3x.yaml --input ~/data/extremenet/images/test/ --confidence-threshold 0.000000001 --opts MODEL.WEIGHTS ~/weights/experiment_1/trident_2499.pth MODEL.ROI_HEADS.NUM_CLASSES 1
+```
+
+
 
 ## Extra
 Detectron2 visualiser can be used with the following command:
