@@ -79,11 +79,11 @@ def main(args):
     cfg.SOLVER.BASE_LR = 1e-3           # Base learning rate
     cfg.SOLVER.GAMMA = 0.5              # Learning rate decay
     cfg.SOLVER.STEPS = (250, 500, 750)  # Iterations at which to decay learning rate
-    cfg.SOLVER.MAX_ITER = 1000          # Maximum number of iterations
+    cfg.SOLVER.MAX_ITER = 100000          # Maximum number of iterations
     cfg.SOLVER.WARMUP_ITERS = 100       # Warmup iterations to linearly ramp learning rate from zero
-    cfg.SOLVER.IMS_PER_BATCH = 2        # Lower to reduce memory usage (1 is the lowest)
+    cfg.SOLVER.IMS_PER_BATCH = 12        # Lower to reduce memory usage (1 is the lowest)
     cfg.TEST.EVAL_PERIOD = 10          # When to evaluate
-    cfg.SOLVER.CHECKPOINT_PERIOD = 16
+    cfg.SOLVER.CHECKPOINT_PERIOD = 100
 
     if args.eval_only:
         model = Trainer.build_model(cfg)
